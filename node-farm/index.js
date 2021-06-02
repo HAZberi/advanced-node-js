@@ -52,8 +52,9 @@ const replaceWithTemplate = (ui, data) => {
   output = output.replaceAll(`{%QUANTITY%}`, data.quantity);
   output = output.replaceAll(`{%PRICE%}`, data.price);
   output = output.replaceAll(`{%DESCRIPTION%}`, data.description);
-  output = output.replaceAll(`{%NON-ORGANIC%}`, "not-organic");
   output = output.replaceAll(`{%ID%}`, data.id);
+  if (!data.organic)
+    output = output.replaceAll(`{%NON-ORGANIC%}`, "not-organic");
 
   return output;
 };
@@ -80,16 +81,15 @@ const server = http.createServer((req, res) => {
   const pathname = req.url;
   //Overview of products
   if (pathname === "/" || pathname === "/overview") {
-    const cardsHtml = productData.map((product) =>
-      replaceWithTemplate(cardUI, product)
-    );
-
-    console.log(cardsHtml);
+    const cardsHtml = productData
+      .map((product) => replaceWithTemplate(cardUI, product))
+      .join("");
+    const overviewPage = overviewUI.replace(`{%INJECTCARDS%}`, cardsHtml);
 
     res.writeHead(200, {
       "Content-type": "text/html",
     });
-    res.end(overviewUI);
+    res.end(overviewPage);
 
     //Products Page
   } else if (pathname === "/product") {
