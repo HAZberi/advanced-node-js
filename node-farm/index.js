@@ -78,7 +78,9 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const productData = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  const pathname = req.url;
+  console.log(req.url);
+  const { pathname, searchParams } = new URL(req.url, "http://localhost:7500");
+  console.log(pathname);
   //Overview of products
   if (pathname === "/" || pathname === "/overview") {
     const cardsHtml = productData
@@ -93,7 +95,13 @@ const server = http.createServer((req, res) => {
 
     //Products Page
   } else if (pathname === "/product") {
-    res.end("Products Page");
+    const product = productData[searchParams.get("id")];
+    const productPage = replaceWithTemplate(productUI, product);
+
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });
+    res.end(productPage);
 
     //API Page
   } else if (pathname === "/api") {
