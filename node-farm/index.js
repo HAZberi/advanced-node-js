@@ -52,10 +52,19 @@ const server = http.createServer((req, res) => {
     res.end("Overview OR a list of products");
   } else if (pathname === "/product") {
     res.end("Products Page");
+  } else if (pathname === "/api") {
+    fs.readFile(`${__dirname}/dev-data/data.json`, "utf-8", (err, data) => {
+      if (err) console.error(err);
+      const productData = JSON.parse(data);
+      res.writeHead(200, {
+        "Content-type": "application/json",
+      });
+      res.end(data);
+    });
   } else {
     res.writeHead(404, {
-      'Content-type': 'text/html',
-      'my-own-response-header': 'Naita Jee'
+      "Content-type": "text/html",
+      "my-own-response-header": "Naita Jee",
     });
     res.end("<h1>Page Not Found</h1>");
   }
