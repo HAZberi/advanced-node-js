@@ -44,10 +44,33 @@ const http = require("http");
 // });
 
 //------------- A Basic Node Server with Basic Routing -------------//
+const replaceWithTemplate = (ui, data) => {
+  let output = ui.replaceAll(`{%PRODUCTNAME%}`, data.productName);
+  output = output.replaceAll(`{%IMAGE%}`, data.image);
+  output = output.replaceAll(`{%PRODUCTORIGIN%}`, data.from);
+  output = output.replaceAll(`{%NUTRIENTS%}`, data.nutrients);
+  output = output.replaceAll(`{%QUANTITY%}`, data.quantity);
+  output = output.replaceAll(`{%PRICE%}`, data.price);
+  output = output.replaceAll(`{%DESCRIPTION%}`, data.description);
+  output = output.replaceAll(`{%NON-ORGANIC%}`, "not-organic");
+  output = output.replaceAll(`{%ID%}`, data.id);
+
+  return output;
+};
+
 //Read the templates only one time
-const cardUI = fs.readFileSync(`${__dirname}/templates/card-template.html`, "utf-8");
-const overviewUI = fs.readFileSync(`${__dirname}/templates/overview-template.html`, "utf-8");
-const productUI = fs.readFileSync(`${__dirname}/templates/product-template.html`, "utf-8");
+const cardUI = fs.readFileSync(
+  `${__dirname}/templates/card-template.html`,
+  "utf-8"
+);
+const overviewUI = fs.readFileSync(
+  `${__dirname}/templates/overview-template.html`,
+  "utf-8"
+);
+const productUI = fs.readFileSync(
+  `${__dirname}/templates/product-template.html`,
+  "utf-8"
+);
 
 //Read the product data only one time
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
@@ -57,23 +80,29 @@ const server = http.createServer((req, res) => {
   const pathname = req.url;
   //Overview of products
   if (pathname === "/" || pathname === "/overview") {
+    const cardsHtml = productData.map((product) =>
+      replaceWithTemplate(cardUI, product)
+    );
+
+    console.log(cardsHtml);
+
     res.writeHead(200, {
-      'Content-type': "text/html",
-    })
+      "Content-type": "text/html",
+    });
     res.end(overviewUI);
 
-  //Products Page
+    //Products Page
   } else if (pathname === "/product") {
     res.end("Products Page");
 
-  //API Page
+    //API Page
   } else if (pathname === "/api") {
     res.writeHead(200, {
       "Content-type": "application/json",
     });
     res.end(data);
 
-  //Page Not Found Page
+    //Page Not Found Page
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
