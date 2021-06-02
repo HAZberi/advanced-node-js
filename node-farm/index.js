@@ -1,6 +1,7 @@
 //Require Modules
 const fs = require("fs");
 const http = require("http");
+const injectDataInTemplate = require("./modules/replaceTemplate");
 //--------------- Synchronous/Blocking Read Write -------------//
 //Declarations
 // const greeting = `Hello World`;
@@ -44,20 +45,6 @@ const http = require("http");
 // });
 
 //------------- A Basic Node Server with Basic Routing -------------//
-const replaceWithTemplate = (ui, data) => {
-  let output = ui.replaceAll(`{%PRODUCTNAME%}`, data.productName);
-  output = output.replaceAll(`{%IMAGE%}`, data.image);
-  output = output.replaceAll(`{%PRODUCTORIGIN%}`, data.from);
-  output = output.replaceAll(`{%NUTRIENTS%}`, data.nutrients);
-  output = output.replaceAll(`{%QUANTITY%}`, data.quantity);
-  output = output.replaceAll(`{%PRICE%}`, data.price);
-  output = output.replaceAll(`{%DESCRIPTION%}`, data.description);
-  output = output.replaceAll(`{%ID%}`, data.id);
-  if (!data.organic)
-    output = output.replaceAll(`{%NON-ORGANIC%}`, "not-organic");
-
-  return output;
-};
 
 //Read the templates only one time
 const cardUI = fs.readFileSync(
@@ -78,13 +65,11 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const productData = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  console.log(req.url);
   const { pathname, searchParams } = new URL(req.url, "http://localhost:7500");
-  console.log(pathname);
   //Overview of products
   if (pathname === "/" || pathname === "/overview") {
     const cardsHtml = productData
-      .map((product) => replaceWithTemplate(cardUI, product))
+      .map((product) => injectDataInTemplate(cardUI, product))
       .join("");
     const overviewPage = overviewUI.replace(`{%INJECTCARDS%}`, cardsHtml);
 
@@ -96,7 +81,7 @@ const server = http.createServer((req, res) => {
     //Products Page
   } else if (pathname === "/product") {
     const product = productData[searchParams.get("id")];
-    const productPage = replaceWithTemplate(productUI, product);
+    const productPage = injectDataInTemplate(productUI, product);
 
     res.writeHead(200, {
       "Content-type": "text/html",
