@@ -44,22 +44,36 @@ const http = require("http");
 // });
 
 //------------- A Basic Node Server with Basic Routing -------------//
-//Reads the data only one time
+//Read the templates only one time
+const cardUI = fs.readFileSync(`${__dirname}/templates/card-template.html`, "utf-8");
+const overviewUI = fs.readFileSync(`${__dirname}/templates/overview-template.html`, "utf-8");
+const productUI = fs.readFileSync(`${__dirname}/templates/product-template.html`, "utf-8");
+
+//Read the product data only one time
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const productData = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
   const pathname = req.url;
-  console.log(pathname);
+  //Overview of products
   if (pathname === "/" || pathname === "/overview") {
-    res.end("Overview OR a list of products");
+    res.writeHead(200, {
+      'Content-type': "text/html",
+    })
+    res.end(overviewUI);
+
+  //Products Page
   } else if (pathname === "/product") {
     res.end("Products Page");
+
+  //API Page
   } else if (pathname === "/api") {
     res.writeHead(200, {
       "Content-type": "application/json",
     });
     res.end(data);
+
+  //Page Not Found Page
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
