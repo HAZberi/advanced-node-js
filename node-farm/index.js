@@ -44,6 +44,9 @@ const http = require("http");
 // });
 
 //------------- A Basic Node Server with Basic Routing -------------//
+//Reads the data only one time
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const productData = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
   const pathname = req.url;
@@ -53,14 +56,10 @@ const server = http.createServer((req, res) => {
   } else if (pathname === "/product") {
     res.end("Products Page");
   } else if (pathname === "/api") {
-    fs.readFile(`${__dirname}/dev-data/data.json`, "utf-8", (err, data) => {
-      if (err) console.error(err);
-      const productData = JSON.parse(data);
-      res.writeHead(200, {
-        "Content-type": "application/json",
-      });
-      res.end(data);
+    res.writeHead(200, {
+      "Content-type": "application/json",
     });
+    res.end(data);
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
