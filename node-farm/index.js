@@ -1,6 +1,9 @@
 //Require Modules
 const fs = require("fs");
 const http = require("http");
+
+const slugify = require("slugify");
+
 const injectDataInTemplate = require("./modules/replaceTemplate");
 //--------------- Synchronous/Blocking Read Write -------------//
 //Declarations
@@ -63,6 +66,11 @@ const productUI = fs.readFileSync(
 //Read the product data only one time
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const productData = JSON.parse(data);
+
+const slugs = productData.map((product) =>
+  slugify(product.productName, { lower: true })
+);
+console.log(slugs);
 
 const server = http.createServer((req, res) => {
   const { pathname, searchParams } = new URL(req.url, "http://localhost:7500");
