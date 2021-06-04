@@ -7,6 +7,7 @@ module.exports = (ui, data) => {
   output = output.replaceAll(`{%PRICE%}`, data.price);
   output = output.replaceAll(`{%DESCRIPTION%}`, data.description);
   output = output.replaceAll(`{%ID%}`, data.id);
+  output = output.replaceAll(`{%SLUG%}`, data.slug);
   if (!data.organic)
     output = output.replaceAll(`{%NON-ORGANIC%}`, "not-organic");
 

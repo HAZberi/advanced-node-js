@@ -75,7 +75,7 @@ const slugs = productData.map((product) =>
 );
 
 //Adding slugs to existing data
-const slugifyData = productData.map((product) => {
+const slugifyedData = productData.map((product) => {
   if (product.id || product.id === 0) {
     product.slug = slugs[product.id];
   } else {
@@ -84,13 +84,11 @@ const slugifyData = productData.map((product) => {
   return product;
 });
 
-console.log(slugifyData);
-
 const server = http.createServer((req, res) => {
   const { pathname, searchParams } = new URL(req.url, "http://localhost:7500");
   //Overview of products
   if (pathname === "/" || pathname === "/overview") {
-    const cardsHtml = productData
+    const cardsHtml = slugifyedData
       .map((product) => injectDataInTemplate(cardUI, product))
       .join("");
     const overviewPage = overviewUI.replace(`{%INJECTCARDS%}`, cardsHtml);
@@ -100,9 +98,9 @@ const server = http.createServer((req, res) => {
     });
     res.end(overviewPage);
 
-    //Products Page
-  } else if (pathname === "/product") {
-    const product = productData[searchParams.get("id")];
+  //Products Page
+  } else if (pathname.includes("/product")) {
+    const product = slugifyedData[searchParams.get("id")];
     const productPage = injectDataInTemplate(productUI, product);
 
     res.writeHead(200, {
@@ -110,14 +108,14 @@ const server = http.createServer((req, res) => {
     });
     res.end(productPage);
 
-    //API Page
+  //API Page
   } else if (pathname === "/api") {
     res.writeHead(200, {
       "Content-type": "application/json",
     });
     res.end(data);
 
-    //Page Not Found Page
+  //Page Not Found Page
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
