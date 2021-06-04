@@ -67,10 +67,24 @@ const productUI = fs.readFileSync(
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const productData = JSON.parse(data);
 
+//Creating slugs for existing data
+
+//Creating slugs from product name
 const slugs = productData.map((product) =>
   slugify(product.productName, { lower: true })
 );
-console.log(slugs);
+
+//Adding slugs to existing data
+const slugifyData = productData.map((product) => {
+  if (product.id || product.id === 0) {
+    product.slug = slugs[product.id];
+  } else {
+    console.log("Error!! Cannot find product id.");
+  }
+  return product;
+});
+
+console.log(slugifyData);
 
 const server = http.createServer((req, res) => {
   const { pathname, searchParams } = new URL(req.url, "http://localhost:7500");
