@@ -13,22 +13,26 @@ server.on("request", (req, res) => {
     //processes run out of resources.
 
     //Solution 2 using streams
-    const readableStream = fs.createReadStream('test-file.txt');
-    readableStream.on('data', dataChunk => {
-        res.write(dataChunk);
-    })
-    readableStream.on('end', ()=>{
-        res.end();
-    })
-    readableStream.on('error', err => {
-        console.log(err);
-        res.statusCode = 500;
-        res.end("File Not Found");
-    })
+    // const readableStream = fs.createReadStream('test-file.txt');
+    // readableStream.on('data', dataChunk => {
+    //     res.write(dataChunk);
+    // })
+    // readableStream.on('end', ()=>{
+    //     res.end();
+    // })
+    // readableStream.on('error', err => {
+    //     console.log(err);
+    //     res.statusCode = 500;
+    //     res.end("File Not Found");
+    // })
     //The problem with this approach is that readable stream is much more
     //faster than response stream over the network and it can
     //potentially overwhelm the response stream which cannot handle all this
     //incoming data so fast. This problem is called back pressure. 
+
+    //Solution 3 best when reading large files
+    const readableStream = fs.createReadStream('test-file.txt');
+    readableStream.pipe(res);
 })
 
 server.listen(5000, "127.0.0.1", ()=>{
