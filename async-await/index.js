@@ -7,13 +7,15 @@ fs.readFile(`${__dirname}/dog.txt`, (err, data) => {
 
   superagent
     .get(`https://dog.ceo/api/breed/${data}/images/random`)
-    .end((err, res) => {
-      if (err) return console.log("Cannot found the breed");
+    .then((res) => {
       console.log(res.body.message);
 
       fs.writeFile(`${__dirname}/dog-image.txt`, res.body.message, (err) => {
         if (err) return console.log("Cannot write to the file");
         console.log("Successfully written to the file.");
       });
+    })
+    .catch((err) => {
+      if (err) return console.log("Cannot find the requested breed");
     });
 });
