@@ -19,9 +19,8 @@ const writeFileWithPromise = (file, data) => {
   });
 };
 
-//Always remember to return a promise, so it can be chained using 
+//Always remember to return a promise, so it can be chained using
 // the ".then()" method.
-
 
 readFileWithPromise(`${__dirname}/dog.txt`)
   .then((data) => {
@@ -31,12 +30,10 @@ readFileWithPromise(`${__dirname}/dog.txt`)
   .then((res) => {
     console.log(res.body.message);
 
-    return writeFileWithPromise(
-      `${__dirname}/dog-image.txt`,
-      res.body.message
-    ).then(() => {
-      console.log("Successfully written to the file.");
-    });
+    return writeFileWithPromise(`${__dirname}/dog-image.txt`, res.body.message);
+  })
+  .then(() => {
+    console.log("Successfully written to the file.");
   })
   .catch((err) => {
     console.log(err.message);
