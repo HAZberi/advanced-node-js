@@ -22,19 +22,40 @@ const writeFileWithPromise = (file, data) => {
 //Always remember to return a promise, so it can be chained using
 // the ".then()" method.
 
-readFileWithPromise(`${__dirname}/dog.txt`)
-  .then((data) => {
-    console.log(`Breed: ${data}`);
-    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
-  })
-  .then((res) => {
-    console.log(res.body.message);
+// readFileWithPromise(`${__dirname}/dog.txt`)
+//   .then((data) => {
+//     console.log(`Breed: ${data}`);
+//     return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+//   })
+//   .then((res) => {
+//     console.log(res.body.message);
 
-    return writeFileWithPromise(`${__dirname}/dog-image.txt`, res.body.message);
-  })
-  .then(() => {
+//     return writeFileWithPromise(`${__dirname}/dog-image.txt`, res.body.message);
+//   })
+//   .then(() => {
+//     console.log("Successfully written to the file.");
+//   })
+//   .catch((err) => {
+//     console.log(err.message);
+//   });
+
+const getDogImage = async () => {
+  try {
+    const data = await readFileWithPromise(`${__dirname}/dogg.txt`);
+    console.log(`Breed: ${data}`);
+    const response = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    console.log(response.body.message);
+    await writeFileWithPromise(
+      `${__dirname}/dog-image.txt`,
+      response.body.message
+    );
     console.log("Successfully written to the file.");
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//Now just call this function
+getDogImage();
