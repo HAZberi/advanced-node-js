@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { promises } = require("stream");
 const superagent = require("superagent");
 
 const readFileWithPromise = (file) => {
@@ -41,15 +42,23 @@ const writeFileWithPromise = (file, data) => {
 
 const getDogImage = async () => {
   try {
-    const data = await readFileWithPromise(`${__dirname}/dogg.txt`);
+    const data = await readFileWithPromise(`${__dirname}/dog.txt`);
     console.log(`Breed: ${data}`);
-    const response = await superagent.get(
+    const response1 = superagent.get(
       `https://dog.ceo/api/breed/${data}/images/random`
     );
-    console.log(response.body.message);
+    const response2 = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const response3 = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const allResponses = await Promise.all([response1, response2, response3]);
+    const dogImages = allResponses.map((dogImage) => dogImage.body.message);
+    console.log(dogImages);
     await writeFileWithPromise(
       `${__dirname}/dog-image.txt`,
-      response.body.message
+      dogImages.join(`\n`)
     );
     console.log("Successfully written to the file.");
   } catch (err) {
@@ -68,12 +77,12 @@ const getDogImage = async () => {
 // });
 
 (async () => {
-    try {
-        console.log("1. Begin to execute ");
-        const res = await getDogImage();
-        console.log(res);
-        console.log("3. Done executing");
-    } catch (err) {
-        console.log(err);
-    }
+  try {
+    console.log("1. Begin to execute ");
+    const res = await getDogImage();
+    console.log(res);
+    console.log("3. Done executing");
+  } catch (err) {
+    console.log(err);
+  }
 })();
