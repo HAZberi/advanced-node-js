@@ -41,7 +41,7 @@ const writeFileWithPromise = (file, data) => {
 
 const getDogImage = async () => {
   try {
-    const data = await readFileWithPromise(`${__dirname}/dog.txt`);
+    const data = await readFileWithPromise(`${__dirname}/dogg.txt`);
     console.log(`Breed: ${data}`);
     const response = await superagent.get(
       `https://dog.ceo/api/breed/${data}/images/random`
@@ -61,8 +61,19 @@ const getDogImage = async () => {
 //Now just call this function
 
 //Async functions automatically returns a promise
-console.log("1. Begin to execute ");
-getDogImage().then((x) => {
-  console.log(x);
-  console.log("3. Done executing");
-});
+// console.log("1. Begin to execute ");
+// getDogImage().then((x) => {
+//   console.log(x);
+//   console.log("3. Done executing");
+// });
+
+(async () => {
+    try {
+        console.log("1. Begin to execute ");
+        const res = await getDogImage();
+        console.log(res);
+        console.log("3. Done executing");
+    } catch (err) {
+        console.log(err);
+    }
+})();
